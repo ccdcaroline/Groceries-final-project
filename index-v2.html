@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Grocery Manager</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+      padding: 30px 15px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 900px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .card {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    }
+
+    h2 {
+      margin-top: 0;
+      margin-bottom: 12px;
+      color: #333;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 10px;
+      font-size: 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    button {
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      padding: 9px 12px;
+    }
+
+    .add-btn {
+      background: #2d89ef;
+      color: #fff;
+    }
+
+    .add-btn:hover {
+      background: #1f6fc8;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    li {
+      background: #f8f9fb;
+      border: 1px solid #e2e6ea;
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .item-text {
+      flex: 1;
+      word-break: break-word;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 6px;
+    }
+
+    .remove-btn {
+      background: #e74c3c;
+      color: white;
+    }
+
+    .remove-btn:hover {
+      background: #c0392b;
+    }
+
+    .got-btn {
+      background: #27ae60;
+      color: white;
+    }
+
+    .got-btn:hover {
+      background: #1f8a4d;
+    }
+
+    .empty {
+      color: #666;
+      font-style: italic;
+      background: #fff;
+      border: 1px dashed #ccc;
+    }
+
+    @media (max-width: 800px) {
+      .app {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Pantry / Just Bought -->
+    <section class="card">
+      <h2>Pantry / Just Bought</h2>
+      <div class="input-row">
+        <input id="pantryInput" type="text" placeholder="Add item to pantry..." />
+        <button id="addPantryBtn" class="add-btn">Add</button>
+      </div>
+      <ul id="pantryList"></ul>
+    </section>
+
+    <!-- Need to Buy -->
+    <section class="card">
+      <h2>Need to Buy</h2>
+      <div class="input-row">
+        <input id="needInput" type="text" placeholder="Add item to buy..." />
+        <button id="addNeedBtn" class="add-btn">Add</button>
+      </div>
+      <ul id="needList"></ul>
+    </section>
+  </div>
+
+  <script>
+    const STORAGE_KEYS = {
+      pantry: "grocery_pantry_items",
+      need: "grocery_need_items"
+    };
+
+    const pantryInput = document.getElementById("pantryInput");
+    const needInput = document.getElementById("needInput");
+    const addPantryBtn = document.getElementById("addPantryBtn");
+    const addNeedBtn = document.getElementById("addNeedBtn");
+    const pantryListEl = document.getElementById("pantryList");
+    const needListEl = document.getElementById("needList");
+
+    const state = {
+      pantry: loadList(STORAGE_KEYS.pantry),
+      need: loadList(STORAGE_KEYS.need)
+    };
+
+    function loadList(key) {
+      try {
+        const saved = localStorage.getItem(key);
+        const parsed = JSON.parse(saved);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveList(type) {
+      localStorage.setItem(STORAGE_KEYS[type], JSON.stringify(state[type]));
+    }
+
+    function addItem(type, inputEl) {
+      const value = inputEl.value.trim();
+      if (!value) return;
+      state[type].push(value);
+      saveList(type);
+      inputEl.value = "";
+      render();
+      inputEl.focus();
+    }
+
+    function removeItem(type, index) {
+      state[type].splice(index, 1);
+      saveList(type);
+      render();
+    }
+
+    function moveNeedToPantry(index) {
+      const item = state.need[index];
+      if (!item) return;
+
+      // Remove from need list
+      state.need.splice(index, 1);
+      saveList("need");
+
+      // Add to pantry list
+      state.pantry.push(item);
+      saveList("pantry");
+
+      render();
+    }
+
+    function createEmptyMessage(text) {
+      const li = document.createElement("li");
+      li.className = "empty";
+      li.textContent = text;
+      return li;
+    }
+
+    function renderPantry() {
+      pantryListEl.innerHTML = "";
+
+      if (state.pantry.length === 0) {
+        pantryListEl.appendChild(createEmptyMessage("No pantry items yet."));
+        return;
+      }
+
+      state.pantry.forEach((item, index) => {
+        const li = document.createElement("li");
+
+        const text = document.createElement("span");
+        text.className = "item-text";
+        text.textContent = item;
+
+        const btnRow = document.createElement("div");
+        btnRow.className = "btn-row";
+
+        const removeBtn = document.createElement("button");
+        removeBtn.className = "remove-btn";
+        removeBtn.textContent = "Remove";
+        removeBtn.addEventListener("click", () => removeItem("pantry", index));
+
+        btnRow.appendChild(removeBtn);
+        li.appendChild(text);
+        li.appendChild(btnRow);
+        pantryListEl.appendChild(li);
+      });
+    }
+
+    function renderNeed() {
+      needListEl.innerHTML = "";
+
+      if (state.need.length === 0) {
+        needListEl.appendChild(createEmptyMessage("No items in your shopping list."));
+        return;
+      }
+
+      state.need.forEach((item, index) => {
+        const li = document.createElement("li");
+
+        const text = document.createElement("span");
+        text.className = "item-text";
+        text.textContent = item;
+
+        const btnRow = document.createElement("div");
+        btnRow.className = "btn-row";
+
+        const gotBtn = document.createElement("button");
+        gotBtn.className = "got-btn";
+        gotBtn.textContent = "Got it";
+        gotBtn.addEventListener("click", () => moveNeedToPantry(index));
+
+        const removeBtn = document.createElement("button");
+        removeBtn.className = "remove-btn";
+        removeBtn.textContent = "Remove";
+        removeBtn.addEventListener("click", () => removeItem("need", index));
+
+        btnRow.appendChild(gotBtn);
+        btnRow.appendChild(removeBtn);
+        li.appendChild(text);
+        li.appendChild(btnRow);
+        needListEl.appendChild(li);
+      });
+    }
+
+    function render() {
+      renderPantry();
+      renderNeed();
+    }
+
+    addPantryBtn.addEventListener("click", () => addItem("pantry", pantryInput));
+    addNeedBtn.addEventListener("click", () => addItem("need", needInput));
+
+    pantryInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") addItem("pantry", pantryInput);
+    });
+
+    needInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") addItem("need", needInput);
+    });
+
+    render();
+  </script>
+</body>
+</html>
