@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Meal Ideas | Smart Grocery Planner</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <script type="module" src="javascript/app.js"></script>
+</head>
+<body data-page="meals">
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <h1>Smart Grocery Planner</h1>
+      <nav>
+        <a href="index.html" data-nav="home">Home</a>
+        <a href="pantry.html" data-nav="pantry">My Lists</a>
+        <a href="meal-ideas.html" data-nav="meals">AI Meal Ideas</a>
+      </nav>
+    </div>
+  </header>
+ 
+  <main class="container">
+    <section class="grid-two">
+      <article class="card">
+        <h2>Select Ingredients</h2>
+        <p class="muted">Choose pantry ingredients to use in your meal:</p>
+        <div id="ingredientChecklist" class="ingredient-grid"></div>
+        <button id="refreshIngredientsBtn" class="btn btn-secondary">Refresh Ingredients</button>
+      </article>
+ 
+      <article class="card">
+        <h2>Generate Meal Idea</h2>
+        <p id="keyStatus" class="muted"></p>
+ 
+        <label for="mealType">Meal Type</label>
+        <select id="mealType">
+          <option value="breakfast">Breakfast</option>
+          <option value="lunch">Lunch</option>
+          <option value="snack">Snack</option>
+          <option value="dinner">Dinner</option>
+        </select>
+ 
+        <label for="customIngredients">Optional extra ingredients (comma separated)</label>
+        <input id="customIngredients" type="text" placeholder="example: lemon, garlic, olive oil" />
+ 
+        <button id="askIdeaBtn" class="btn">Get AI Meal Idea</button>
+ 
+        <div id="ideaResult" class="result-box">
+          <p class="muted">Your AI meal idea appears here.</p>
+        </div>
+      </article>
+    </section>
+  </main>
+</body>
+</html>

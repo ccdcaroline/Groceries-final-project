@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Grocery Planner</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <script type="module" src="javascript/app.js"></script>
+</head>
+<body data-page="home">
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <h1>Smart Grocery Planner</h1>
+      <nav>
+        <a href="index.html" data-nav="home">Home</a>
+        <a href="pantry.html" data-nav="pantry">My Lists</a>
+        <a href="meal-ideas.html" data-nav="meals">AI Meal Ideas</a>
+      </nav>
+    </div>
+  </header>
+ 
+  <main class="container">
+    <section class="hero card">
+      <h2 id="greeting">Plan smarter meals with what you already have</h2>
+      <p class="muted">
+        Track pantry items, build your grocery list, and generate recipe ideas from selected ingredients.
+      </p>
+      <div class="button-row">
+        <a class="btn" href="pantry.html">Manage My Lists</a>
+        <a class="btn btn-secondary" href="meal-ideas.html">Get AI Meal Ideas</a>
+      </div>
+    </section>
+ 
+    <section class="stats-grid">
+      <article class="card stat-card">
+        <h3>Pantry / Just Bought</h3>
+        <p class="big-number" id="homePantryCount">0</p>
+      </article>
+      <article class="card stat-card">
+        <h3>Need to Buy</h3>
+        <p class="big-number" id="homeNeedCount">0</p>
+      </article>
+      <article class="card stat-card">
+        <h3>Today</h3>
+        <p class="big-number small" id="todayDate">--</p>
+      </article>
+    </section>
+  </main>
+</body>
+</html>
